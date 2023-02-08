@@ -39,10 +39,10 @@ class Player {
 }
 
 class Platform {
-    constructor() {
+    constructor({ x, y }) {
         this.position = {
-            x: 300,
-            y: 100
+            x,
+            y
         }
 
         this.width = 200
@@ -71,8 +71,12 @@ function calculateGravityVelocity() {
 
 
 const player = new Player()
-const platform = new Platform()
+const platforms = [
+    new Platform({ x: 200, y: 300 }),
+    new Platform({ x: 500, y: 200 }),
+    // new Platform(500, 100),
 
+]
 const keys = {
     right: {
         pressed: false
@@ -86,19 +90,25 @@ function animate() {
     requestAnimationFrame(animate)
     context.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
-    platform.draw()
+    platforms.forEach(platform => {
+        platform.draw()
+    })
 
     handlePlayerVelocityAxisX()
     collisionDetection()
 
 }
 
+
 function collisionDetection() {
-    const YAxis = player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y
-    const XAxis = player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width
-    if (YAxis && XAxis) {
-        player.velocity.y = 0
-    }
+    platforms.forEach(platform => {
+        const YAxis = player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y
+        const XAxis = player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width
+        if (YAxis && XAxis) {
+            player.velocity.y = 0
+        }
+    })
+
 }
 
 function handlePlayerVelocityAxisX() {
@@ -114,9 +124,14 @@ function handlePlayerVelocityAxisX() {
 
 function movesBackground() {
     if (keys.right.pressed) {
-        platform.position.x -= 5
+        platforms.forEach(platform => {
+            platform.position.x -= 5
+        })
+
     } else if (keys.left.pressed) {
-        platform.position.x += 5
+        platforms.forEach(platform => {
+            platform.position.x += 5
+        })
     }
 }
 
