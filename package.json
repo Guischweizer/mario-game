@@ -2,16 +2,25 @@
   "name": "mario-game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "webpack.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run open",
-    "open": "concurrently \"http-server -a localhost -p 1234\" \"open http://localhost:1234/index.html\""
+    "dev": "webpack --config webpack.config.js",
+    "start": "webpack --config webpack.config.js --openssl-legacy-provider",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^7.6.0",
-    "http-server": "^14.1.1"
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "babel-loader": "^8.1.0",
+    "browser-sync": "^2.26.7",
+    "browser-sync-webpack-plugin": "^2.2.2",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^4.0.3",
+    "prettier": "^2.0.2",
+    "webpack-cli": "^3.3.11",
+    "webpack": "^5.75.0"
   }
 }

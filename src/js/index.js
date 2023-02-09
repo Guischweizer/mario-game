@@ -1,9 +1,12 @@
+import platFormImg from '../assets/platform.png'
+import backgroundImg from '../assets/background.png'
+
 const canvas = document.querySelector('canvas')
 const context = canvas.getContext('2d')
 
 // could be done with CSS
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+canvas.width = 1024
+canvas.height = 576
 
 const gravity = 0.9
 
@@ -39,19 +42,20 @@ class Player {
 }
 
 class Platform {
-    constructor({ x, y }) {
+    constructor({ x, y, image }) {
         this.position = {
             x,
             y
         }
+        this.image = image
 
-        this.width = 200
-        this.height = 20
+        this.width = image.width
+        this.height = image.height
+
     }
 
     draw() {
-        context.fillStyle = 'blue'
-        context.fillRect(this.position.x, this.position.y, this.width, this.height)
+        context.drawImage(this.image, this.position.x, this.position.y)
     }
 }
 
@@ -69,12 +73,15 @@ function calculateGravityVelocity() {
     } else player.velocity.y = 0
 }
 
+const image = new Image()
+image.src = platFormImg
 
 const player = new Player()
 const platforms = [
-    new Platform({ x: 200, y: 300 }),
-    new Platform({ x: 500, y: 200 }),
-    // new Platform(500, 100),
+    // new Platform({ x: 200, y: 900, image }),
+    // new Platform({ x: 200, y: 900, image }),
+    new Platform({ x: 300, y: 500, image }),
+    new Platform({ x: 500, y: 100, image }),
 
 ]
 const keys = {
@@ -86,17 +93,28 @@ const keys = {
     }
 }
 
+let scrollOffset = 0
+
 function animate() {
     requestAnimationFrame(animate)
-    context.clearRect(0, 0, canvas.width, canvas.height)
-    player.update()
+    context.fillStyle = 'white'
+    context.fillRect(0, 0, canvas.width, canvas.height)
     platforms.forEach(platform => {
         platform.draw()
     })
 
+    player.update()
+
     handlePlayerVelocityAxisX()
     collisionDetection()
+    winScenario()
 
+}
+
+function winScenario() {
+    if (scrollOffset > 2000) {
+        console.log("You win!")
+    }
 }
 
 
@@ -124,11 +142,13 @@ function handlePlayerVelocityAxisX() {
 
 function movesBackground() {
     if (keys.right.pressed) {
+        scrollOffset += 5
         platforms.forEach(platform => {
             platform.position.x -= 5
         })
 
     } else if (keys.left.pressed) {
+        scrollOffset -= 5
         platforms.forEach(platform => {
             platform.position.x += 5
         })
