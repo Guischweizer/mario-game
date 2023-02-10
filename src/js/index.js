@@ -1,25 +1,25 @@
+import { GenericObject, Platform } from './classes/scensarioClasses'
+import { Player } from './classes/playerClass'
 import platFormImg from '../assets/platform.png'
 import backgroundImg from '../assets/background.png'
 import hillsImg from '../assets/hills.png'
-import { GenericObject, Platform } from './classes/scensarioClasses'
-import { Player } from './classes/playerClass'
 
 export const canvas = document.querySelector('canvas')
 export const context = canvas.getContext('2d')
-export const gravity = 0.9
-const platformHTMLImage = createImage(platFormImg)
-const player = new Player()
-const platforms = [
-    new Platform({ x: -1, y: 470, image: platformHTMLImage }),
-    new Platform({ x: platformHTMLImage.width - 3, y: 470, image: platformHTMLImage }),
+export const gravity = 0.8
 
-]
+// could be done with CSS
+canvas.width = 1024
+canvas.height = 576
 
-const genericOBjects = [new GenericObject({ x: 0, y: 0, image: createImage(backgroundImg) }),
-new GenericObject({ x: 0, y: 0, image: createImage(hillsImg) })
-]
+let platformHTMLImage = createImage(platFormImg)
+let player = new Player()
+let platforms = []
 
-const keys = {
+
+let genericOBjects = []
+
+let keys = {
     right: {
         pressed: false
     },
@@ -30,23 +30,36 @@ const keys = {
 
 let scrollOffset = 0
 
-// could be done with CSS
-canvas.width = 1024
-canvas.height = 576
+function init() {
+    platformHTMLImage = createImage(platFormImg)
+    player = new Player()
+    platforms = [
+        new Platform({ x: -1, y: 470, image: platformHTMLImage }),
+        new Platform({ x: platformHTMLImage.width - 3, y: 470, image: platformHTMLImage }),
+        new Platform({ x: platformHTMLImage.width * 2 + 100, y: 470, image: platformHTMLImage }),
+        new Platform({ x: platformHTMLImage.width * 3 + 250, y: 440, image: platformHTMLImage }),
+        new Platform({ x: platformHTMLImage.width * 6 + 250, y: 440, image: platformHTMLImage }),
 
-export function updatePlayerMovements() {
-    player.position.y += player.velocity.y
-    player.position.x += player.velocity.x
+    ]
+
+
+    genericOBjects = [
+        new GenericObject({ x: 0, y: 0, image: createImage(backgroundImg) }),
+        new GenericObject({ x: 0, y: 0, image: createImage(hillsImg) })
+    ]
+
+    keys = {
+        right: {
+            pressed: false
+        },
+        left: {
+            pressed: false
+        }
+    }
+
+    scrollOffset = 0
 }
 
-export function calculateGravityVelocity() {
-    // this ensure that our player will be always pushed to the bottom and stop when hitting it
-    const isPlayerPlayerYMinorThanCanvasY = player.position.y + player.height + player.velocity.y <= canvas.height
-
-    if (isPlayerPlayerYMinorThanCanvasY) {
-        player.velocity.y += gravity
-    } else player.velocity.y = 0
-}
 
 function createImage(newImage) {
     const image = new Image()
@@ -75,6 +88,7 @@ function animate() {
     handlePlayerVelocityAxisX()
     collisionDetection()
     winScenario()
+    loseScenario()
 
 }
 
@@ -84,6 +98,13 @@ function winScenario() {
     }
 }
 
+
+function loseScenario() {
+    if (player.position.y > canvas.height) {
+        console.log("You lose!")
+        init()
+    }
+}
 
 function collisionDetection() {
     platforms.forEach(platform => {
@@ -144,7 +165,7 @@ addEventListener('keydown', ({ code }) => {
             break;
 
         case 'Space':
-            player.velocity.y -= 20
+            player.velocity.y -= 15
             break;
 
         default:
@@ -178,4 +199,20 @@ addEventListener('keyup', ({ code }) => {
     }
 })
 
+
+export function updatePlayerMovements() {
+    player.position.y += player.velocity.y
+    player.position.x += player.velocity.x
+}
+
+export function calculateGravityVelocity() {
+    // this ensure that our player will be always pushed to the bottom and stop when hitting it
+    const isPlayerPlayerYMinorThanCanvasY = player.position.y + player.height + player.velocity.y <= canvas.height
+
+    if (isPlayerPlayerYMinorThanCanvasY) {
+        player.velocity.y += gravity
+    }
+}
+
+init()
 animate()
