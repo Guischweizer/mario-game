@@ -1,89 +1,24 @@
 import platFormImg from '../assets/platform.png'
 import backgroundImg from '../assets/background.png'
+import hillsImg from '../assets/hills.png'
+import { GenericObject, Platform } from './classes/scensarioClasses'
+import { Player } from './classes/playerClass'
 
-const canvas = document.querySelector('canvas')
-const context = canvas.getContext('2d')
-
-// could be done with CSS
-canvas.width = 1024
-canvas.height = 576
-
-const gravity = 0.9
-
-class Player {
-    constructor() {
-        // define the default positions, this method will run each time that we consume our player class
-        this.position = {
-            x: 100,
-            y: 100
-        }
-        this.width = 40
-        this.height = 40
-        this.velocity = {
-            x: 0,
-            y: 0
-        }
-    }
-    // defines how our player will look
-    draw() {
-        context.fillStyle = 'red'
-        context.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
-
-    // changes player properties over time
-    update() {
-        this.draw()
-
-        updatePlayerMovements()
-        calculateGravityVelocity()
-
-    }
-
-}
-
-class Platform {
-    constructor({ x, y, image }) {
-        this.position = {
-            x,
-            y
-        }
-        this.image = image
-
-        this.width = image.width
-        this.height = image.height
-
-    }
-
-    draw() {
-        context.drawImage(this.image, this.position.x, this.position.y)
-    }
-}
-
-function updatePlayerMovements() {
-    player.position.y += player.velocity.y
-    player.position.x += player.velocity.x
-}
-
-function calculateGravityVelocity() {
-    // this ensure that our player will be always pushed to the bottom and stop when hitting it
-    const isPlayerPlayerYMinorThanCanvasY = player.position.y + player.height + player.velocity.y <= canvas.height
-
-    if (isPlayerPlayerYMinorThanCanvasY) {
-        player.velocity.y += gravity
-    } else player.velocity.y = 0
-}
-
-const image = new Image()
-image.src = platFormImg
-
+export const canvas = document.querySelector('canvas')
+export const context = canvas.getContext('2d')
+export const gravity = 0.9
+const platformHTMLImage = createImage(platFormImg)
 const player = new Player()
 const platforms = [
-    // new Platform({ x: 200, y: 900, image }),
-    // new Platform({ x: 200, y: 900, image }),
-    new Platform({ x: 300, y: 500, image }),
-    new Platform({ x: 500, y: 100, image }),
+    new Platform({ x: -1, y: 470, image: platformHTMLImage }),
+    new Platform({ x: platformHTMLImage.width - 3, y: 470, image: platformHTMLImage }),
 
 ]
+
+const genericOBjects = [new GenericObject({ x: 0, y: 0, image: createImage(backgroundImg) }),
+new GenericObject({ x: 0, y: 0, image: createImage(hillsImg) })
+]
+
 const keys = {
     right: {
         pressed: false
@@ -95,14 +30,46 @@ const keys = {
 
 let scrollOffset = 0
 
+// could be done with CSS
+canvas.width = 1024
+canvas.height = 576
+
+export function updatePlayerMovements() {
+    player.position.y += player.velocity.y
+    player.position.x += player.velocity.x
+}
+
+export function calculateGravityVelocity() {
+    // this ensure that our player will be always pushed to the bottom and stop when hitting it
+    const isPlayerPlayerYMinorThanCanvasY = player.position.y + player.height + player.velocity.y <= canvas.height
+
+    if (isPlayerPlayerYMinorThanCanvasY) {
+        player.velocity.y += gravity
+    } else player.velocity.y = 0
+}
+
+function createImage(newImage) {
+    const image = new Image()
+    image.src = newImage
+    return image
+}
+
+function drawScenarios() {
+    genericOBjects.forEach(genericObject => {
+        genericObject.draw()
+    })
+
+    platforms.forEach(platform => {
+        platform.draw()
+    })
+}
+
 function animate() {
     requestAnimationFrame(animate)
     context.fillStyle = 'white'
     context.fillRect(0, 0, canvas.width, canvas.height)
-    platforms.forEach(platform => {
-        platform.draw()
-    })
 
+    drawScenarios()
     player.update()
 
     handlePlayerVelocityAxisX()
@@ -146,11 +113,16 @@ function movesBackground() {
         platforms.forEach(platform => {
             platform.position.x -= 5
         })
-
+        genericOBjects.forEach(genericObject => {
+            genericObject.position.x -= 3
+        })
     } else if (keys.left.pressed) {
         scrollOffset -= 5
         platforms.forEach(platform => {
             platform.position.x += 5
+        })
+        genericOBjects.forEach(genericObject => {
+            genericObject.position.x += 3
         })
     }
 }
