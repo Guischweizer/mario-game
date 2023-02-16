@@ -2,9 +2,8 @@ import { GenericObject, Platform } from './classes/scensarioClasses'
 import { Player } from './classes/playerClass'
 import platFormImg from '../assets/platform.png'
 import backgroundImg from '../assets/background.png'
-import smallTallPlatformImg from '../assets/platformSmallTall.png'
-
 import hillsImg from '../assets/hills.png'
+import { createImage } from './utils'
 
 export const canvas = document.querySelector('canvas')
 export const context = canvas.getContext('2d')
@@ -62,11 +61,7 @@ function init() {
 }
 
 
-function createImage(newImage) {
-    const image = new Image()
-    image.src = newImage
-    return image
-}
+
 
 function drawScenarios() {
     genericOBjects.forEach(genericObject => {
@@ -149,16 +144,32 @@ function movesBackground() {
     }
 }
 
+
+function movesToTheRight() {
+    keys.right.pressed = true
+    player.currentSprite = player.sprites.run.right
+    player.currentCropwWidth = player.sprites.run.cropWidth
+    player.width = player.sprites.run.width
+}
+
+function movesToTheLeft() {
+    keys.left.pressed = true
+    player.currentSprite = player.sprites.run.left
+    player.currentCropwWidth = player.sprites.run.cropWidth
+    player.width = player.sprites.run.width
+
+}
+
 addEventListener('keydown', ({ code }) => {
     switch (code) {
         //moves left
         case 'KeyA':
-            keys.left.pressed = true
+            movesToTheLeft()
             break;
 
         // moves right
         case 'KeyD':
-            keys.right.pressed = true
+            movesToTheRight()
             break;
 
         case 'KeyS':
@@ -175,16 +186,31 @@ addEventListener('keydown', ({ code }) => {
 })
 
 
+function stopMovingRight() {
+    keys.right.pressed = false
+    player.currentSprite = player.sprites.stand.right
+    player.currentCropwWidth = player.sprites.stand.cropWidth
+    player.width = player.sprites.stand.width
+}
+
+
+function stopMovingLeft() {
+    keys.left.pressed = false
+    player.currentSprite = player.sprites.stand.left
+    player.currentCropwWidth = player.sprites.stand.cropWidth
+    player.width = player.sprites.stand.width
+}
+
 addEventListener('keyup', ({ code }) => {
     switch (code) {
         //moves left
         case 'KeyA':
-            keys.left.pressed = false
+            stopMovingLeft()
             break;
 
         // moves right
         case 'KeyD':
-            keys.right.pressed = false
+            stopMovingRight()
             break;
 
         case 'KeyS':
