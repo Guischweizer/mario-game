@@ -2,6 +2,8 @@ import { GenericObject, Platform } from './classes/scensarioClasses'
 import { Player } from './classes/playerClass'
 import platFormImg from '../assets/platform.png'
 import backgroundImg from '../assets/background.png'
+import smallTallPlatformImg from '../assets/platformSmallTall.png'
+
 import hillsImg from '../assets/hills.png'
 
 export const canvas = document.querySelector('canvas')
@@ -37,9 +39,8 @@ function init() {
         new Platform({ x: -1, y: 470, image: platformHTMLImage }),
         new Platform({ x: platformHTMLImage.width - 3, y: 470, image: platformHTMLImage }),
         new Platform({ x: platformHTMLImage.width * 2 + 100, y: 470, image: platformHTMLImage }),
-        new Platform({ x: platformHTMLImage.width * 3 + 250, y: 440, image: platformHTMLImage }),
-        new Platform({ x: platformHTMLImage.width * 6 + 250, y: 440, image: platformHTMLImage }),
-
+        new Platform({ x: platformHTMLImage.width * 3 + 250, y: 470, image: platformHTMLImage }),
+        new Platform({ x: platformHTMLImage.width * 6 + 250, y: 470, image: platformHTMLImage }),
     ]
 
 
@@ -120,7 +121,7 @@ function collisionDetection() {
 function handlePlayerVelocityAxisX() {
     if (keys.right.pressed && player.position.x < 400) {
         player.velocity.x = 5
-    } else if (keys.left.pressed && player.position.x > 100) {
+    } else if ((keys.left.pressed && player.position.x > 100) || (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)) {
         player.velocity.x = -5
     } else {
         player.velocity.x = 0
@@ -137,7 +138,7 @@ function movesBackground() {
         genericOBjects.forEach(genericObject => {
             genericObject.position.x -= 3
         })
-    } else if (keys.left.pressed) {
+    } else if (keys.left.pressed && scrollOffset > 0) {
         scrollOffset -= 5
         platforms.forEach(platform => {
             platform.position.x += 5
